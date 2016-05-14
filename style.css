@@ -88,6 +88,9 @@ html, body {
     border-bottom: 1px solid #202020;
 }
 
+input[type=checkbox] {
+	margin-bottom: 0;
+}
 
 input[type=range] {
     -webkit-appearance: none;
