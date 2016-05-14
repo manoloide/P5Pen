@@ -112,7 +112,7 @@ MirrorModifier.prototype.update = function(lines) {
 var DrawLineModifier = function(strokeWeight, color) {
 	Modifier.call(this, "Draw Line");
 
-	this.strokeWeight = this.addParam(new FloatProperty("Stroke Weight", strokeWeight, 0.5, 40, 0.1));
+	this.strokeWeight = this.addParam(new FloatProperty("Stroke Weight", strokeWeight, 0.5, 20, 0.1));
 	this.color = this.addParam(new ColorProperty("Color", color));
 }
 
@@ -121,7 +121,7 @@ DrawLineModifier.prototype.constructor = DrawLineModifier;
 
 DrawLineModifier.prototype.update = function(lines) {
 	stroke(this.color.value);
-	//strokeWeight(2);//this.strokeWeight);
+	strokeWeight(this.strokeWeight.value);
 	for(var i = 0; i < lines.length; i++) {
 		var p1 = lines[i].p1;
 		var p2 = lines[i].p2;
