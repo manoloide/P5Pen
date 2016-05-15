@@ -94,6 +94,7 @@ input[type=checkbox] {
 
 input[type=range] {
     -webkit-appearance: none;
+    background-color: #0A0A0A;
     width: 220px;
     border-bottom: 1px solid #343434;
 }
@@ -101,7 +102,7 @@ input[type=range] {
 input[type=range]::-webkit-slider-runnable-track {
     width: 220px;
     height: 4px; 
-    background: #121212;
+    background: none;
     border: none;
 }
 
