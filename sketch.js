@@ -11,8 +11,8 @@ function setup() {
 
 	modifiers.push(new MirrorModifier(10, createVector(width/2, height/2), 0.25, true));
 	modifiers.push(new MirrorModifier(10, createVector(width*0.1, height*0.1), 0.25));
-	modifiers.push(new MirrorModifier(10, createVector(width*0.9, height*0.9), 0.25));
-	modifiers.push(new DrawLineModifier(2, color(0, 80)));
+	//modifiers.push(new MirrorModifier(10, createVector(width*0.9, height*0.9), 0.25));
+	modifiers.push(new DrawLineModifier(1, color(0, 80)));
 
 	for(var i = 0; i < modifiers.length; i++) {
 		modifiers[i].createGui();

@@ -13,6 +13,10 @@ Property.prototype.update = function() {
 
 };
 
+Property.prototype.setValue = function(nv) {
+	console.log("No define setValue for this property")
+};
+
 
 var BoolProperty = function(name, value) {
 	Property.call(this, name, value);
@@ -39,6 +43,11 @@ BoolProperty.prototype.getDiv = function() {
 	return content;
 }
 
+BoolProperty.prototype.setValue = function(nv) {
+	this.value = nv;
+	this.param_input.checked(this.value);
+}	
+
 BoolProperty.prototype.setInput = function(input) {
 	this.param_input = input;
 	this.value = this.param_input.checked();
@@ -51,6 +60,12 @@ BoolProperty.prototype.update = function() {
 var ColorProperty = function(name, value) {
 	Property.call(this, name, value);
 
+	this.antValue = this.value;
+	this.r = new IntProperty("Red", this.value.levels[0], 0, 255);
+	this.g = new IntProperty("Green", this.value.levels[1], 0, 255);
+	this.b = new IntProperty("Blue", this.value.levels[2], 0, 255);
+	this.a = new IntProperty("Alpha", this.value.levels[3], 0, 255);
+	this.colorSelector;
 }
 
 ColorProperty.prototype = Object.create(Property.prototype);
@@ -62,18 +77,55 @@ ColorProperty.prototype.getDiv = function() {
 	var param_title = createDiv(this.name);
 	param_title.parent(content);
 	param_title.style("float", "left");
-	var param_input = createInput('');
-	param_input.attribute("type", "color");
-	param_input.style("float", "right");
-	param_input.parent(content);
+	this.colorSelector = createInput('');
+	this.colorSelector.attribute("type", "color");
+	this.colorSelector.style("float", "right");
+	this.colorSelector.parent(content);
 	createDiv('').addClass('space').parent(content);
+	createDiv('').addClass('space').parent(content);
+
+	this.r.getDiv().parent(content);
+	this.g.getDiv().parent(content);
+	this.b.getDiv().parent(content);
+	this.a.getDiv().parent(content);
+
+	this.setValue(this.value);
 
 	return content;
 }
 
+ColorProperty.prototype.setValue = function(nv) {
+	this.value = nv;
+	this.r.setValue(this.value.levels[0]);
+	this.g.setValue(this.value.levels[1]);
+	this.b.setValue(this.value.levels[2]);
+	this.a.setValue(this.value.levels[3]);
+	this.colorSelector.value("#" + ((1 << 24) + (this.r.value << 16) + (this.g.value << 8) + this.b.value).toString(16).slice(1));
+}	
 
 ColorProperty.prototype.update = function() {
-	//this.param_value.html(this.params_input.value());
+
+	ac = hexToRgb(this.colorSelector.value());
+	this.value = color(ac.r, ac.g, ac.b, this.value._getAlpha());
+
+	if(this.antValue.toString() !== this.value.toString()){
+		this.r.setValue(this.value.levels[0]);
+		this.g.setValue(this.value.levels[1]);
+		this.b.setValue(this.value.levels[2]);
+	}
+
+
+	this.r.update();
+	//this.r.setGrandientBack(color(0, this.g.value, this.b.value), color(255, this.g.value, this.b.value));
+	this.g.update();
+	//this.g.setGrandientBack(color(this.r.value, 0, this.b.value), color(this.r.value, 255, this.b.value));
+	this.b.update();
+	//this.b.setGrandientBack(color(this.r.value, this.g.value, 0), color(this.r.value, this.g.value, 255));
+	this.a.update();
+
+	this.value = color(this.r.value, this.g.value, this.b.value, this.a.value);
+	this.antValue = this.value;
+	this.colorSelector.value("#" + ((1 << 24) + (this.r.value << 16) + (this.g.value << 8) + this.b.value).toString(16).slice(1));
 }
 
 var FloatProperty = function(name, value, min, max, step){
@@ -112,6 +164,11 @@ FloatProperty.prototype.getDiv = function() {
 	this.param_input = param_input;
 
 	return content;
+}
+
+FloatProperty.prototype.setValue = function(nv) {
+	this.value = nv;
+	this.param_input.value(this.value);
 }
 
 FloatProperty.prototype.update = function() {
@@ -153,9 +210,18 @@ IntProperty.prototype.getDiv = function() {
 	return content;
 }
 
+IntProperty.prototype.setValue = function(nv) {
+	this.value = nv;
+	this.param_input.value(this.value);
+}
+
 IntProperty.prototype.update = function() {
 	this.value = this.param_input.value();
 	this.param_value.html(this.value);
+}
+
+IntProperty.prototype.setGrandientBack = function(c1, c2) {
+	this.param_input.style("background","linear-gradient(to right, red , yellow);");
 }
 
 var VectorProperty = function(name, value, amount, min, max){
@@ -207,5 +273,20 @@ VectorProperty.prototype.update = function() {
 	this.value.set(values);
 }
 
+
+
+function hexToRgb(hex) {
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
 
 
