@@ -9,9 +9,11 @@ function setup() {
 	canvas = createCanvas(w, h);
 	canvas.parent('container');
 
-	modifiers.push(new MirrorModifier(10, createVector(width/2, height/2), 0.25, true));
-	modifiers.push(new MirrorModifier(10, createVector(width*0.1, height*0.1), 0.25));
+	
+	//modifiers.push(new MirrorModifier(10, createVector(width*0.1, height*0.1), 0.25));
 	//modifiers.push(new MirrorModifier(10, createVector(width*0.9, height*0.9), 0.25));
+	modifiers.push(new TileModifier(100, 100));
+	modifiers.push(new MirrorModifier(10, createVector(width/2, height/2), 0.25, true));
 	modifiers.push(new DrawLineModifier(1, color(0, 80)));
 
 	for(var i = 0; i < modifiers.length; i++) {
@@ -36,7 +38,7 @@ function draw() {
 			lines.push(new Line(createVector(mouseX, mouseY), createVector(mouseX, mouseY)));
 			beginDrawing = false;
 			for(var i = 0; i < modifiers.length; i++) {
-				modifiers[i].begin();
+				if(modifiers[i].active.value) modifiers[i].begin();
 			}
 		}
 		else {
@@ -44,7 +46,7 @@ function draw() {
 		}
 
 		for(var i = 0; i < modifiers.length; i++) {
-			modifiers[i].update(lines);
+			if(modifiers[i].active.value) modifiers[i].update(lines);
 		}
 	}
 
@@ -60,7 +62,7 @@ function mousePressed() {
 function mouseReleased() {
 	if(isDrawing) {
 		for(var i = 0; i < modifiers.length; i++) {
-			modifiers[i].end();
+			if(modifiers[i].active.value) modifiers[i].end();
 		}
 		isDrawing = false;
 	}
@@ -89,7 +91,6 @@ MirrorModifier.prototype.begin = function() {
 }
 
 MirrorModifier.prototype.update = function(lines) {
-	if(!this.active.value) return;
 	var cc = lines.length;
 	var center = this.center.value; 
 	var segments = this.segments.value;
@@ -107,6 +108,46 @@ MirrorModifier.prototype.update = function(lines) {
 		}
 	}
 }
+
+var TileModifier = function(w, h) {
+	Modifier.call(this, "Tile Modifier");
+	this.width = this.addParam(new IntProperty("Width", w, 20, 400));
+	this.height = this.addParam(new IntProperty("Height", h, 20, 400));
+	this.cw = 1;
+	this.ch = 1;
+}
+
+TileModifier.prototype = Object.create(Modifier.prototype);
+TileModifier.prototype.constructor = TileModifier;
+
+TileModifier.prototype.begin = function() {
+	this.cw = int(width*1./this.width.value)+1;
+	this.ch = int(height*1./this.height.value)+1;
+}	
+
+TileModifier.prototype.update = function(lines) {
+	var cc = lines.length;
+	var aux = [];
+	for(var l = 0; l < cc; l++) {
+		for(var j = -1; j < this.ch+1; j++) {
+			for(var i = -1; i < this.cw+1; i++) {
+				var p1 = lines[l].p1.copy();
+				var p2 = lines[l].p2.copy();
+				var des = createVector(i*this.width.value, j*this.height.value);
+				p2.x = (p2.x-p1.x);
+				p2.y = (p2.y-p1.y);
+				p1.x = (p1.x)%this.width.value;
+				p1.y = (p1.y)%this.height.value;
+				p2 = p2.add(p1);
+				p1.add(des);
+				p2.add(des);
+				lines.push(new Line(p1, p2));
+			}
+		}
+		lines = lines.splice(0, 1);
+	}
+}
+
 
 
 var DrawLineModifier = function(strokeWeight, color) {
