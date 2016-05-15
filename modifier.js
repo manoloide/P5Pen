@@ -62,6 +62,10 @@ Modifier.prototype.createGui = function() {
 	}
 }
 
+Modifier.prototype.setActive = function(active) {
+	this.active.setValue(active);
+}
+
 Modifier.prototype.updateParams = function() {
 	this.active.update();
 	for(var i = 0; i < this.params.length; i++) {
