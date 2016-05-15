@@ -116,12 +116,13 @@ ColorProperty.prototype.update = function() {
 
 
 	this.r.update();
-	//this.r.setGrandientBack(color(0, this.g.value, this.b.value), color(255, this.g.value, this.b.value));
+	this.r.setGrandientBack(color(0, this.g.value, this.b.value), color(255, this.g.value, this.b.value));
 	this.g.update();
-	//this.g.setGrandientBack(color(this.r.value, 0, this.b.value), color(this.r.value, 255, this.b.value));
+	this.g.setGrandientBack(color(this.r.value, 0, this.b.value), color(this.r.value, 255, this.b.value));
 	this.b.update();
-	//this.b.setGrandientBack(color(this.r.value, this.g.value, 0), color(this.r.value, this.g.value, 255));
+	this.b.setGrandientBack(color(this.r.value, this.g.value, 0), color(this.r.value, this.g.value, 255));
 	this.a.update();
+	this.a.setGrandientBack(color(10), this.value);
 
 	this.value = color(this.r.value, this.g.value, this.b.value, this.a.value);
 	this.antValue = this.value;
@@ -221,7 +222,7 @@ IntProperty.prototype.update = function() {
 }
 
 IntProperty.prototype.setGrandientBack = function(c1, c2) {
-	this.param_input.style("background","linear-gradient(to right, red , yellow);");
+	this.param_input.style("background", "linear-gradient(to right, "+c1.toString()+", "+c2.toString()+")");
 }
 
 var VectorProperty = function(name, value, amount, min, max){
