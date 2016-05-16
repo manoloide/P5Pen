@@ -11,9 +11,10 @@ function setup() {
 
 	
 	//modifiers.push(new MirrorModifier(10, createVector(width*0.1, height*0.1), 0.25));
-	//modifiers.push(new MirrorModifier(10, createVector(width*0.9, height*0.9), 0.25));
 	var tile = new TileModifier(100, 100);
+	var mirror = new MirrorModifier(4, createVector(width*0.25, height*0.25), 0.25);
 	modifiers.push(tile);
+	modifiers.push(mirror);
 	modifiers.push(new MirrorModifier(10, createVector(width/2, height/2), 0.25, true));
 	modifiers.push(new DrawLineModifier(1, color(0, 80)));
 
@@ -21,6 +22,7 @@ function setup() {
 		modifiers[i].createGui();
 	}
 	
+	mirror.setActive(false);
 	tile.setActive(false);
 
 	background(250);
