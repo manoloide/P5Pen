@@ -1,4 +1,5 @@
-var canvas, drawing;
+var canvas, drawing, gui;
+var onGui;
 var globalAlpha;
 var lines = [];
 var beginDrawing, isDrawing;
@@ -12,6 +13,7 @@ function setup() {
 	p5.parent('container');
 	canvas = createGraphics(w, h);
 	drawing = createGraphics(w, h);
+	gui = createGraphics(w, h);
 
 	
 	//modifiers.push(new MirrorModifier(10, createVector(width*0.1, height*0.1), 0.25));
@@ -36,6 +38,7 @@ function setup() {
 function draw() {
 	
 	var lines = [];
+	onGui = (mouseX > width)? true : false;
 
 	for(var i = 0; i < modifiers.length; i++) {
 		modifiers[i].updateParams();
@@ -57,10 +60,17 @@ function draw() {
 		for(var i = 0; i < modifiers.length; i++) {
 			if(modifiers[i].active.value) modifiers[i].update(lines);
 		}
-		//console.log(globalAlpha);
-		//tint(255, 0 , 0, globalAlpha);
+
 		image(drawing, 0, 0);
-		//noTint();
+	}
+
+	if(onGui) {
+		gui.clear();
+		for(var i = 0; i < modifiers.length; i++) {
+			if(modifiers[i].active.value) modifiers[i].gui();
+		}
+
+		image(gui, 0, 0);
 	}
 
 }
@@ -126,6 +136,28 @@ MirrorModifier.prototype.update = function(lines) {
 	}
 }
 
+MirrorModifier.prototype.gui = function() {
+	this.begin();
+	var cc = lines.length;
+	var center = this.center.value; 
+	var segments = this.segments.value;
+	var rotate = this.rotate.value;
+	var angle, c, s;
+	var diag = dist(0, 0, width, height);
+	for(var i = 0; i < segments; i++){
+		angle = this.da*i+rotate;
+		c = cos(angle);
+		s = sin(angle);
+		gui.stroke(0, 128);
+		gui.line(center.x, center.y, center.x+c*diag, center.y+s*diag);
+		gui.stroke("#27BDFB");
+		gui.line(center.x, center.y, center.x+c*diag, center.y+s*diag);
+	}
+	gui.fill("#27BDFB");
+	gui.ellipse(center.x, center.y, 12, 12);
+}
+
+
 var TileModifier = function(w, h) {
 	Modifier.call(this, "Tile Modifier");
 	this.width = this.addParam(new IntProperty("Width", w, 20, 400));
@@ -162,6 +194,22 @@ TileModifier.prototype.update = function(lines) {
 			}
 		}
 		lines = lines.splice(0, 1);
+	}
+}
+
+TileModifier.prototype.gui = function() {
+	this.begin();
+	for(var i = 0; i < width; i+=this.width.value){
+		gui.stroke(0, 128);
+		gui.line(i+0.5, 0+0.5, i+0.5, height+0.5);
+		gui.stroke("#27BDFB");
+		gui.line(i, 0, i, height);
+	}
+	for(var i = 0; i < height; i+=this.height.value){
+		gui.stroke(0, 128);
+		gui.line(0+0.5, i+0.5, width+0.5, i+0.5);
+		gui.stroke("#27BDFB");
+		gui.line(0, i, width, i);
 	}
 }
 
