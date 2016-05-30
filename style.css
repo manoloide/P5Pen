@@ -21,7 +21,13 @@ html, body {
 	background-color: #3E3E3E;
 	width: 260px;
 	height: 100%;
+	overflow-y: scroll;
 }
+
+#menu::-webkit-scrollbar { width: 5px; background-color: #323232}
+#menu::-webkit-scrollbar-button       { height: 5px; }
+#menu::-webkit-scrollbar-track-piece  { background-color: #282828; }
+#menu::-webkit-scrollbar-thumb        { background-color: #505050; }
 
 .modifier {
 	width: 100%;
