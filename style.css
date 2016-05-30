@@ -21,7 +21,7 @@ html, body {
 	background-color: #3E3E3E;
 	width: 260px;
 	height: 100%;
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 #menu::-webkit-scrollbar { width: 5px; background-color: #323232}
